@@ -1,12 +1,12 @@
 # Sistema de Recuperación de Información Multimodal con RAG
 
 Proyecto final — Asignatura: Recuperación de Información.
-Hecho por: 
- - Jorge Bozquez
- - Juan Flores
- - Mateo Macas
+Corpus: `meta_Digital_Music.jsonl` (metadata de Amazon Digital Music: título,
+descripción, artista/sello, precio, rating, imágenes de portada, etc.)
 
-Corpus: `meta_Digital_Music.jsonl` 
+Stack: **OpenCLIP (ViT-B-32)** para embeddings multimodales · **FAISS**
+como base de datos vectorial · **Gemini API** para la generación RAG ·
+**Streamlit** para la interfaz conversacional.
 
 ---
 
@@ -80,17 +80,28 @@ data/
 ## 2. Instalación
 
 ```bash
+python3 -m venv venv
+source venv/bin/activate          # Windows: venv\Scripts\activate
+
 pip install -r requirements.txt
 ```
 
 ### 2.1. Corpus
 
 Colocar `meta_Digital_Music.jsonl` en `data/meta_Digital_Music.jsonl`
+(o apuntar `CORPUS_PATH` a otra ubicación vía variable de entorno).
 
 ### 2.2. Gemini API Key (necesaria para generación, query expansion LLM y memoria)
 
-1. Conseguir una API key  en https://aistudio.google.com/apikey
+1. Conseguir una API key gratuita en <https://aistudio.google.com/apikey>
+2. Exportarla:
 
+```bash
+export GEMINI_API_KEY="tu_api_key_aquí"      # Windows: set GEMINI_API_KEY=...
+```
+
+También se puede pegar la key directamente desde la barra lateral de la
+app de Streamlit si no se configuró como variable de entorno.
 
 **Sin API key el sistema sigue funcionando**: la recuperación (FAISS +
 CLIP + reranking) funciona igual y se muestran las evidencias, pero la
@@ -152,6 +163,10 @@ este catálogo), combinando dos estrategias:
   palabra — proxy estándar de relevancia temática cuando no hay
   anotación manual disponible.
 
+> Si se indexó solo un subconjunto del corpus (`--max-docs`), correr
+> `generate_qrels.py` también con `--max-docs` del mismo tamaño para
+> que las consultas generadas tengan documentos relevantes presentes
+> en el índice.
 
 ---
 
@@ -189,3 +204,27 @@ Abre automáticamente `http://localhost:8501`. La interfaz permite:
   las búsquedas siguientes dentro de la misma sesión.
 
 ---
+
+## 7. Funcionalidades de excelencia implementadas
+
+| Funcionalidad | Módulo | Descripción |
+|---|---|---|
+| Re-ranking (+15) | `src/reranker.py` | Cross-encoder `ms-marco-MiniLM-L-6-v2` sobre los Top-K de FAISS, combinado con el score vectorial original. |
+| Query Expansion (+15) | `src/query_expansion.py` | Expansión vía Gemini API (sinónimos/géneros/artistas relacionados), con fallback heurístico sin necesidad de API key. |
+| Relevance Feedback (+15) | `src/feedback.py` | Algoritmo de Rocchio sobre los embeddings CLIP a partir de votos 👍/👎 en la sesión. |
+| Memoria conversacional (+15) | `src/memory.py` | Condensación de preguntas de seguimiento en consultas autocontenidas usando el historial del chat (patrón "standalone question"). |
+
+---
+
+## 8. Limitaciones conocidas / decisiones de diseño
+
+- El campo `store` del JSONL original viene con ruido (p. ej.
+  `"Pink Floyd Format: Audio CD"`); `data_loader.py` y
+  `generate_qrels.py` lo limpian antes de usarlo.
+- Si la descarga de una imagen falla (URL rota, sin conexión), el
+  documento se indexa igual usando solo su embedding de texto
+  (fallback automático) — el sistema no descarta documentos por
+  imágenes faltantes.
+- El modelo Gemini por defecto es `gemini-2.5-flash` (estable/económico
+  a la fecha). Se puede cambiar con `GEMINI_MODEL=gemini-3.5-flash`
+  para mayor capacidad a mayor costo.

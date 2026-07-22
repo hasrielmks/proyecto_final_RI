@@ -1,0 +1,26 @@
+# Sistema de RI Multimodal con RAG - dependencias
+# Instalar con: pip install -r requirements.txt --break-system-packages
+# (el flag --break-system-packages solo es necesario en algunas distros
+# Linux con Python gestionado por el sistema; en Windows/Mac/venv no hace falta)
+
+# --- Deep learning / CLIP ---------------------------------------------
+torch>=2.2
+open_clip_torch>=2.24
+
+# --- Base de datos vectorial --------------------------------------------
+faiss-cpu>=1.8
+
+# --- Reranking (cross-encoder) ------------------------------------------
+sentence-transformers>=3.0
+
+# --- Gemini API (RAG generation + query expansion + memoria) ------------
+google-genai>=1.0
+
+# --- Interfaz web ---------------------------------------------------------
+streamlit>=1.35
+
+# --- Utilidades -------------------------------------------------------------
+numpy>=1.26
+pillow>=10.0
+requests>=2.31
+tqdm>=4.66
