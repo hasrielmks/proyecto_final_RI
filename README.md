@@ -1,6 +1,7 @@
 # Sistema de Recuperación de Información Multimodal con RAG
 
 Proyecto final — Asignatura: Recuperación de Información.
+
 Corpus: `meta_Digital_Music.jsonl` 
 
 Realizado por:
