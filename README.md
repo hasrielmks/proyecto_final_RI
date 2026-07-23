@@ -4,6 +4,8 @@ Proyecto final — Asignatura: Recuperación de Información.
 
 Corpus: `meta_Digital_Music.jsonl` 
 
+Video Demostrativo: https://youtu.be/7gkqWWYBbWk
+
 Realizado por:
  - Mateo Macas
  - Juan Flores
