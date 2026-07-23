@@ -1,8 +1,12 @@
 # Sistema de Recuperación de Información Multimodal con RAG
 
 Proyecto final — Asignatura: Recuperación de Información.
-Corpus: `meta_Digital_Music.jsonl` (metadata de Amazon Digital Music: título,
-descripción, artista/sello, precio, rating, imágenes de portada, etc.)
+Corpus: `meta_Digital_Music.jsonl` 
+
+Realizado por:
+ - Mateo Macas
+ - Juan Flores
+ - Jorge Bosquez
 
 Stack: **OpenCLIP (ViT-B-32)** para embeddings multimodales · **FAISS**
 como base de datos vectorial · **Gemini API** para la generación RAG ·
